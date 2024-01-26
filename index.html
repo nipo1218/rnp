@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>オンラインゲーム</title>
+    <style>
+        .selected {
+            border: 2px solid red;
+        }
+    </style>
+</head>
+<body>
+    <h1>Webブラウザオンラインゲーム</h1>
+    <h2>プレイヤー画像を選択してください：</h2>
+    <img src="player1.png" alt="プレイヤー 1" class="player" data-player="player1.png">
+    <img src="player2.png" alt="プレイヤー 2" class="player" data-player="player2.png">
+    <img src="player3.png" alt="プレイヤー 3" class="player" data-player="player3.png">
+    <img src="player4.png" alt="プレイヤー 4" class="player" data-player="player4.png">
+    <img src="player5.png" alt="プレイヤー 5" class="player" data-player="player5.png">
+    <button id="decisionButton" disabled>決定</button>
+    <script>
+        let selectedPlayer = null;
+
+        document.querySelectorAll('.player').forEach(img => {
+            img.addEventListener('click', function() {
+                // 選択された画像をハイライト表示する
+                if (selectedPlayer) {
+                    selectedPlayer.classList.remove('selected');
+                }
+                this.classList.add('selected');
+                selectedPlayer = this;
+
+                // 決定ボタンを有効にする
+                document.getElementById('decisionButton').disabled = false;
+            });
+        });
+
+        // 決定ボタンがクリックされたときの処理
+        document.getElementById('decisionButton').addEventListener('click', function() {
+            if (selectedPlayer) {
+                // ここで選択した画像の情報をサーバーに送信する処理を追加する
+                console.log('選択されたプレイヤー画像:', selectedPlayer.getAttribute('data-player'));
+            } else {
+                console.log('プレイヤー画像が選択されていません');
+            }
+        });
+    </script>
+</body>
+</html>
