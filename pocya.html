@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>うしゃぽちゃゲーム</title>
+  <style>
+    body {
+      background-image: url('pocya2.jpg');
+      background-size: contain;
+      background-position: center;
+      margin: 0;
+      font-family: 'Arial', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    table {
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    td {
+      width: 50px;
+      height: 50px;
+      border: 1px solid black;
+      text-align: center;
+      font-size: 16px;
+      cursor: pointer;
+      background-color: rgba(255, 255, 255, 0.8);
+      /* 線を丸くする */
+      border: 10px solid rgb(255, 50, 204);
+      border-radius: 10px;
+    }
+
+    /* 新しいアニメーション */
+    @keyframes blink {
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0;
+      }
+    }
+
+    /* 点滅を適用するクラス */
+    .blink {
+      animation: blink 1s infinite;
+    }
+  </style>
+</head>
+
+<body>
+
+  <table id="gameBoard">
+    <!-- ここにセルの生成を自動化するJavaScriptを追加 -->
+  </table>
+
+  <script>
+    const board = Array.from({ length: 9 }, () => Array(9).fill(' '));
+    let currentPlayer = 'X';
+
+    function displayBoard() {
+      for (let row = 0; row < 9; row++) {
+        for (let col = 0; col < 9; col++) {
+          const cell = document.getElementById(`cell_${row}_${col}`);
+          const sign = getPlayerSign(board[row][col]);
+          const isTripleAdjacentSame = checkTripleAdjacentSame(row, col);
+          const additionalClass = isTripleAdjacentSame ? 'blink' : '';
+          cell.innerHTML = sign ? `<img class="player-sign ${additionalClass}" src="${sign}" alt="${board[row][col]}">` : '';
+        }
+      }
+    }
+
+    function getPlayerSign(player) {
+      // 各プレイヤーに対応する画像のファイル名を返す
+      switch (player) {
+        case 'X':
+          return 'pocya3.png';
+        case 'O':
+          return 'pocya4.png';
+        case 'A':
+          return 'pocya5.png';
+        case 'B':
+          return 'pocya6.png';
+        case 'C':
+          return 'pocya7.png';
+        default:
+          return '';
+      }
+    }
+
+    function checkTripleAdjacentSame(row, col) {
+      // 上下左右および斜めのセルが3つ同じであればtrueを返す
+      const directions = [
+        [-1, 0], [1, 0], [0, -1], [0, 1], [-1, -1], [-1, 1], [1, -1], [1, 1]
+      ];
+
+      for (const [dr, dc] of directions) {
+        const r1 = row + dr;
+        const c1 = col + dc;
+        const r2 = r1 + dr;
+        const c2 = c1 + dc;
+
+        if (
+          r1 >= 0 && r1 < 9 && c1 >= 0 && c1 < 9 &&
+          r2 >= 0 && r2 < 9 && c2 >= 0 && c2 < 9 &&
+          board[row][col] === board[r1][c1] && board[row][col] === board[r2][c2] &&
+          board[row][col] !== ' '
+        ) {
+          return true;
+        }
+      }
+
+      return false;
+    }
+
+    function makeMove(row, col) {
+      if (board[row][col] === ' ') {
+        board[row][col] = currentPlayer;
+        displayBoard();
+
+        if (checkWinner()) {
+          alert(`Player ${currentPlayer} wins!`);
+          resetGame();
+        } else if (checkTie()) {
+          alert('It\'s a tie!');
+          resetGame();
+        } else {
+          currentPlayer = getNextPlayer();
+        }
+      } else {
+        alert('This cell is already occupied. Please choose another cell.');
+      }
+    }
+
+    function checkWinner() {
+      // (Check for a winner - similar to the previous code)
+    }
+
+    function checkTie() {
+      // (Check for a tie - similar to the previous code)
+    }
+
+    function getNextPlayer() {
+      const players = ['X', 'O', 'A', 'B', 'C'];
+      const currentPlayerIndex = players.indexOf(currentPlayer);
+      return players[(currentPlayerIndex + 1) % players.length];
+    }
+
+    function resetGame() {
+      for (let row = 0; row < 9; row++) {
+        for (let col = 0; col < 9; col++) {
+          board[row][col] = ' ';
+        }
+      }
+      currentPlayer = 'X';
+      displayBoard();
+    }
+
+    // セルの生成
+    const table = document.getElementById('gameBoard');
+    for (let row = 0; row < 9; row++) {
+      const tr = document.createElement('tr');
+      for (let col = 0; col < 9; col++) {
+        const td = document.createElement('td');
+        td.id = `cell_${row}_${col}`;
+        td.onclick = () => makeMove(row, col);
+        tr.appendChild(td);
+      }
+      table.appendChild(tr);
+    }
+
+    displayBoard();
+  </script>
+
+</body>
+
+</html>
