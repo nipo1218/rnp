@@ -1,14 +1,11 @@
-// win.js
-
 // ゲーム盤面のサイズ
 const BOARD_SIZE = 10;
 // プレイヤーの数
-let PLAYER_COUNT = 2; // 初期値は2人
+const PLAYER_COUNT = 2;
 
 let currentPlayer = 1;
 let gameBoard = [];
 let winner = null;
-let onlinePlayers = []; // オンラインプレイヤーの名前を格納する配列
 
 function initGame() {
     // ゲーム盤面の初期化
@@ -16,8 +13,7 @@ function initGame() {
     // 勝利者をリセット
     winner = null;
 }
-
-// 勝利条件の判定を修正
+// win.js
 function checkWinner(row, col) {
     const directions = [
         [-1, 0], [1, 0], // 縦方向
@@ -38,7 +34,7 @@ function checkWinner(row, col) {
             if (x < 0 || x >= BOARD_SIZE || y < 0 || y >= BOARD_SIZE) break;
 
             // プレイヤーのキャラクターが連続しているかどうかを確認
-            if (gameBoard[x][y] === currentPlayer) {
+            if (gameBoard[x][y] === players[currentPlayerIndex]) {
                 count++;
             } else {
                 break;
@@ -55,7 +51,7 @@ function checkWinner(row, col) {
     return false;
 }
 
-// ゲーム盤面を更新する処理を修正
+
 function updateBoard(row, col) {
     // ゲーム盤面を更新
     gameBoard[row][col] = currentPlayer;
@@ -66,19 +62,22 @@ function updateBoard(row, col) {
     // 勝利判定
     if (checkWinner(row, col)) {
         winner = currentPlayer;
-        const playerName = onlinePlayers[currentPlayer - 1] || `プレイヤー ${currentPlayer}`;
-        document.getElementById('message').textContent = `${playerName} の勝利！🤍`;
+        document.getElementById('message').textContent = `プレイヤー ${winner} の勝利！`;
     } else {
         // 次のプレイヤーへ
         currentPlayer = currentPlayer === PLAYER_COUNT ? 1 : currentPlayer + 1;
-        const nextPlayerName = onlinePlayers[currentPlayer - 1] || `プレイヤー ${currentPlayer}`;
-        document.getElementById('message').textContent = `${nextPlayerName} のターン`;
+        document.getElementById('message').textContent = `プレイヤー ${currentPlayer} のターン`;
     }
 }
 
-// オンラインプレイヤーの名前を設定する処理を追加
-function setOnlinePlayers(names) {
-    onlinePlayers = names.slice(0, PLAYER_COUNT);
+function handleClick(row, col) {
+    // ゲーム終了時はクリック無効化
+    if (winner) return;
+
+    // クリックされたセルが空であれば更新
+    if (gameBoard[row][col] === 0) {
+        updateBoard(row, col);
+    }
 }
 
 // ページロード時にゲームを初期化
